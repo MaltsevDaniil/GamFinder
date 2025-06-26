@@ -80,6 +80,40 @@ def get_recomend_profile(user_id: int):
         update_recommends(user_id)
         return get_recomend_profile(user_id)
 
+def see_who_like(user_id: int):
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == user_id).first()
+    likes = user.who_likes
+    if likes:
+        comma_index = likes.find(',')
+        if comma_index != -1:
+            first_like = likes[:comma_index]
+            new_likes = likes[comma_index+1:]
+            print(new_likes, first_like)
+        else:
+            first_like = likes
+            new_likes = ""
+        user.who_likes = new_likes
+        db.commit()
+        db.close()
+        return {"msg": "Ok", "who_likes": get_user(int(first_like))}
+    else:
+        db.close()
+        return {"msg": "Nobody like your profile",}
+
+def like(user_id, liked_profile_id):
+    db = SessionLocal()
+    liked_user = db.query(User).filter(User.id == liked_profile_id).first()
+    if str(user_id) in liked_user.who_likes.split(','):
+        return get_recomend_profile(user_id)
+    if liked_user.who_likes == "":
+        liked_user.who_likes = f"{user_id}"
+    else:
+        liked_user.who_likes += f",{user_id}"
+    db.commit()
+    db.close()
+    return get_recomend_profile(user_id)
+
 def update_image(user_id: int, image: str):
     db = SessionLocal()
     user = db.query(User).filter(User.id == user_id).first()

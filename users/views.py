@@ -32,6 +32,14 @@ def update_recomendations(user_id: int):
 def get_rec_profile(user_id: int):
     return crud.get_recomend_profile(user_id)
 
+@router.get("/{user_id}/see_who_like/")
+def see_who_like(user_id: int):
+    return crud.see_who_like(user_id)
+
+@router.post("/{user_id}/like/")
+def like_profile(user_id:int, liked_profile_id: int):
+    return crud.like(user_id, liked_profile_id)
+
 @router.post("/{user_id}/update/image/")
 def update_image(user_id:int, image:str):
     return crud.update_image(user_id, image)
